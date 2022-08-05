@@ -25,6 +25,7 @@ public class AuthorDao {
             while (resultSet.next()) {
                 long id = resultSet.getLong("id");
                 String fullName = resultSet.getString("fullName");
+                System.out.println(fullName);
 
                 Author author = Author.builder()
                         .id(id)
