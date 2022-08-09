@@ -16,24 +16,6 @@ import static uz.pdp.librarymanagementsystem.db.DbConnection.getConnection;
 public class BookDao {
 
 
-//    static Author author1 = new Author(1L, "Tohir Malik");
-//    static Author author2 = new Author(2L, "Author2");
-//    static Author author3 = new Author(3L, "Author3");
-//
-//    static Category category1 = new Category(1L, "cat1");
-//    static Category category2 = new Category(2L, "cat2");
-//    static List<Book> bookList = Arrays.asList(
-//            new Book(1L,
-//                    "Book1",
-//                    "fasfasfsdf",
-//                    author1,
-//                    category1,
-//                    "4134-32423",
-//                    1998,
-//                    "images/shaytanat.png")
-//
-//    );
-
     public static List<Book> getAllBooks(int size, int page) {
         try {
             ArrayList<Book> bookList = new ArrayList<>();
