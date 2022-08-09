@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import uz.pdp.librarymanagementsystem.authors.Author;
 import uz.pdp.librarymanagementsystem.category.Category;
-import uz.pdp.librarymanagementsystem.db.DbConnection;
 
 import java.lang.reflect.Type;
 import java.sql.*;
@@ -12,15 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static uz.pdp.librarymanagementsystem.db.DbConnection.getConnection;
+
 public class BookDao {
 
 
-    static Author author1 = new Author(1L, "Tohir Malik");
-    static Author author2 = new Author(2L, "Author2");
-    static Author author3 = new Author(3L, "Author3");
-
-    static Category category1 = new Category(1L, "cat1");
-    static Category category2 = new Category(2L, "cat2");
+//    static Author author1 = new Author(1L, "Tohir Malik");
+//    static Author author2 = new Author(2L, "Author2");
+//    static Author author3 = new Author(3L, "Author3");
+//
+//    static Category category1 = new Category(1L, "cat1");
+//    static Category category2 = new Category(2L, "cat2");
 //    static List<Book> bookList = Arrays.asList(
 //            new Book(1L,
 //                    "Book1",
@@ -38,24 +39,25 @@ public class BookDao {
             ArrayList<Book> bookList = new ArrayList<>();
 
 //          1. CONNECTION OCHAMIZ
-            Connection connection = DbConnection.getConnection();
+            Connection connection = getConnection();
 
 //        2. GET PREPARED STATEMENT
 
             String sql = "select b.id,\n" +
                     "       b.title,\n" +
-                    "       b.\"imgUrl\",\n" +
+                    "       b.imgurl,\n" +
                     "       json_agg(\n" +
                     "               json_build_object(\n" +
                     "                       'id', a.id,\n" +
-                    "                       'fullName', a.fullname)) as authors,\n" +
+                    "                       'fullName', a.fullname)) as authors" +
+                    ",\n" +
                     "    json_build_object('id', c.id, 'name', c.name) as category\n" +
                     "--        c.id                                     as categoryId,\n" +
                     "--        c.name                                   as categoryName\n" +
-                    "from books b\n" +
-                    "         join books_authors ba on b.id = ba.bookid\n" +
-                    "         join authors a on a.id = ba.authorid\n" +
-                    "         join categories c on c.id = b.categoryid\n" +
+                    "from book b\n" +
+                    "         join book_authors ba on b.id = ba.book_id\n" +
+                    "         join author a on a.id = ba.author_id\n" +
+                    "         join category c on c.id = b.category_id\n" +
                     "group by b.id, c.id, c.name, b.title\n" +
                     "limit ? offset ? * (? - 1)";
 
@@ -104,14 +106,58 @@ public class BookDao {
 
     }
 
+    public static boolean deleteBook(Long bookId) {
+        boolean execute = false;
+        PreparedStatement preparedStatement = null;
+        try {
+            Connection connection = getConnection();
+            String query = "delete from book where id=? ";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setLong(1, bookId);
+
+            execute = preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return execute;
+    }
+
+    public List getFindAuthorsBookId(Long findAuthorBookId) {
+        ArrayList books = new ArrayList<>();
+        try (
+                Connection connection = getConnection();
+                Statement statement = connection.createStatement();
+        ) {
+            String findAuthorsBookId = "select b.*,a.id as author_id, a.fullname as author_name from book b\n" +
+                    "    join book_authors ba on b.id = ba.book_id\n" +
+                    "    join author a on a.id = ba.author_id where b.id=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(findAuthorsBookId);
+
+            preparedStatement.setLong(1, findAuthorBookId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+
+                Object o = new BookDao().get(resultSet);
+                books.add(o);
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return books;
+    }
+
     public static boolean addNewBook(Book book) {
 
         try {
 
-            Connection connection = DbConnection.getConnection();
+            Connection connection = getConnection();
 
-            String insertBook = "insert into books (title, description, categoryId, \"imgUrl\") VALUES " +
-                    "(?, ?, ?, ?)";
+            String insertBook = "insert into book (title, description, category_id, imgurl,year,isbn) VALUES " +
+                    "(?, ?, ?, ?,?,?)";
             // TODO: 03/08/22 add isbn, year
 
             PreparedStatement preparedStatement = connection.prepareStatement(insertBook);
@@ -120,9 +166,11 @@ public class BookDao {
             preparedStatement.setString(2, book.getDescription());
             preparedStatement.setLong(3, book.getCategoryId());
             preparedStatement.setString(4, book.getImgUrl());
+            preparedStatement.setInt(5, book.getYear());
+            preparedStatement.setString(6, book.getIsbn());
 
 
-            String insertBooksAuthors = "insert into books_authors VALUES ((select currval('books_id_seq')), ?)";
+            String insertBooksAuthors = "insert into book_authors VALUES ((select currval('book_id_seq')), ?)";
             PreparedStatement preparedStatement2 = connection.prepareStatement(insertBooksAuthors);
 
             int executeUpdate1 = preparedStatement.executeUpdate();
@@ -139,6 +187,22 @@ public class BookDao {
         }
 
 
+    }
+
+    public Object get(ResultSet resultSet) {
+        try {
+            String author = resultSet.getString("author_name");
+            Long booId = resultSet.getLong("id");
+            String isbn = resultSet.getString("isbn");
+            String title = resultSet.getString("title");
+            String imgUrl = resultSet.getString("imgurl");
+            String description = resultSet.getString("description");
+            Long categoryId = resultSet.getLong("category_id");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
