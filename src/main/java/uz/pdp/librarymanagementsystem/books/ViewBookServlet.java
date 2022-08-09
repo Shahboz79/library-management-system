@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet({"", "/books"})
+@WebServlet({"/admin","/issued"})
 public class ViewBookServlet extends HttpServlet {
 
 
@@ -33,6 +33,7 @@ public class ViewBookServlet extends HttpServlet {
         if (added) {
             req.setAttribute("message", "Successfully added!!!");
         }
+
         req.getRequestDispatcher("book.jsp").forward(req, resp);
     }
 }

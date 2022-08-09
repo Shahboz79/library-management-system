@@ -18,7 +18,7 @@ public class CategoryDao {
         try (Connection connection = DbConnection.getConnection();) {
             List<Category> categoryList = new ArrayList<>();
 
-            String sql = "select * from categories";
+            String sql = "select * from category";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
 

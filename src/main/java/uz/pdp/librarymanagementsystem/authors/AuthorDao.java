@@ -18,7 +18,7 @@ public class AuthorDao {
         try (Connection connection = DbConnection.getConnection();) {
             List<Author> authorList = new ArrayList<>();
 
-            String sql = "select * from authors";
+            String sql = "select * from author";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
 

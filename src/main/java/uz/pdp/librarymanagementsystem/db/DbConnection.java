@@ -11,9 +11,9 @@ public class DbConnection {
         try {
             Class.forName("org.postgresql.Driver");
             Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/library_db",
+                    "jdbc:postgresql://localhost:5432/library_management_system",
                     "postgres",
-                    "root123"
+                    "02112000"
             );
             return connection;
 
