@@ -16,8 +16,6 @@ public class ViewBookServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-
-
         String pageStr = req.getParameter("page");
         int page = 1;
         if (pageStr != null) {
