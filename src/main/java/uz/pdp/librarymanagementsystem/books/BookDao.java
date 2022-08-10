@@ -105,6 +105,44 @@ public class BookDao {
 
         return execute;
     }
+//    update book set title=?,description=?,category_id=?,imgurl=?,year=?,isbn=? where id=4
+    public static boolean editBook(Book book, Long bookId) {
+        try {
+
+            Connection connection = getConnection();
+
+            String insertBook = "  update book set title=?,description=?,category_id=?,imgurl=?,year=?,isbn=? where id=? ";
+            // TODO: 03/08/22 add isbn, year
+
+            PreparedStatement preparedStatement = connection.prepareStatement(insertBook);
+
+            preparedStatement.setString(1, book.getTitle());
+            preparedStatement.setString(2, book.getDescription());
+            preparedStatement.setLong(3, book.getCategoryId());
+            preparedStatement.setString(4, book.getImgUrl());
+            preparedStatement.setInt(5, book.getYear());
+            preparedStatement.setString(6, book.getIsbn());
+            preparedStatement.setLong(7,bookId);
+
+
+            String insertBooksAuthors = "update book_authors set author_id=? where book_id=?";
+            PreparedStatement preparedStatement2 = connection.prepareStatement(insertBooksAuthors);
+
+            int executeUpdate1 = preparedStatement.executeUpdate();
+
+            int executeUpdate2 = 0;
+            for (Long authorId : book.getAuthorsIds()) {
+                preparedStatement2.setLong(1, authorId);
+                executeUpdate2 = preparedStatement2.executeUpdate();
+            }
+            preparedStatement2.setLong(2,bookId);
+
+            return executeUpdate1 == 1 && executeUpdate2 == 1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     public List getFindAuthorsBookId(Long findAuthorBookId) {
         ArrayList books = new ArrayList<>();

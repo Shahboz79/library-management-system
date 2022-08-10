@@ -16,8 +16,8 @@ public class AddIssue extends HttpServlet {
         Long bookId = Long.valueOf(req.getParameter("bookId"));
         Boolean isIssued = Boolean.valueOf(req.getParameter("issued"));
         IssueReturnedBook issueReturnedBook=IssueReturnedBook.builder()
-                .student_id(studentId)
-                .book_id(bookId)
+                .studentId(studentId)
+                .studentId(bookId)
                 .isIssued(isIssued)
                 .build();
     boolean result=IssueReturnBookDao.addIssueReturnedBookDao(issueReturnedBook);

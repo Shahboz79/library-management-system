@@ -12,8 +12,8 @@ import java.util.Date;
 @Builder
 public class IssueReturnedBook {
     private Long id;
-    private Long student_id;
-    private Long book_id;
+    private Long studentId;
+    private Long bookId;
     private Date dateTime;
     private Boolean isIssued;
 }
